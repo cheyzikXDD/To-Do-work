@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>To-Do Work</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M 20,55 L 40,75 L 80,25 M 60,25 L 80,25 L 80,45' stroke='%23007bff' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --text: #1c1e21;
+            --accent: #007bff;
+            --ton: #0098ea;
+            --delete: #ff4757;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            /* Центрирование контента */
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Кнопка TON */
+        .top-right-donate {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .ton-btn {
+            background: var(--ton);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 152, 234, 0.2);
+            transition: var(--transition);
+        }
+
+        .ton-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 152, 234, 0.4); }
+
+        /* Карточка приложения */
+        .app-card {
+            background: var(--card);
+            width: 100%;
+            max-width: 380px;
+            padding: 40px 30px;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+            text-align: center;
+            /* Чтобы карточка не прыгала при добавлении задач */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .todo-icon { width: 65px; height: 65px; margin: 0 auto 20px; }
+        h1 { font-size: 30px; margin-bottom: 25px; color: var(--text); letter-spacing: -0.5px; }
+
+        .input-box { display: flex; gap: 10px; margin-bottom: 25px; }
+        input {
+            flex: 1;
+            border: 2px solid #f0f0f0;
+            background: #f9f9f9;
+            padding: 14px;
+            border-radius: 14px;
+            outline: none;
+            transition: var(--transition);
+            font-size: 16px;
+        }
+        input:focus { border-color: var(--accent); background: white; }
+
+        #add-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 50px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 22px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            max-height: 280px;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+
+        ul::-webkit-scrollbar { display: none; }
+
+        li {
+            background: #fff;
+            border: 1px solid #f2f2f2;
+            padding: 14px;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: taskAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .del-btn { background: none; border: none; color: #ccc; cursor: pointer; font-size: 18px; }
+
+        /* Адаптивность */
+        @media (max-width: 480px) {
+            body { padding: 15px; }
+            .top-right-donate { top: 15px; right: 15px; left: 15px; }
+            .ton-btn { width: 100%; justify-content: center; }
+            .app-card { margin-top: 60px; } /* Отступ, чтобы не перекрывать кнопку доната */
+        }
+
+        @keyframes taskAppear {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-right-donate">
+    <button onclick="copyTon()" class="ton-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12zM8.406 6.344c.438 0 .844.188 1.125.5l5.219 5.844c.25.281.406.656.406 1.031 0 .375-.156.719-.406 1l-5.219 5.844a1.44 1.44 0 0 1-1.125.5 1.41 1.41 0 0 1-1.406-1.406V7.75c0-.781.625-1.406 1.406-1.406z"/></svg>
+        TON Donate
+    </button>
+</div>
+
+<div class="app-card">
+    <svg class="todo-icon" viewBox="0 0 100 100">
+        <path d="M 20,55 L 40,75 L 80,25 M 60,25 L 80,25 L 80,45" stroke="#007bff" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <h1>Tasks</h1>
+    <div class="input-box">
+        <input type="text" id="taskInput" placeholder="Add a new task..." spellcheck="false">
+        <button id="add-btn" onclick="addTask()">+</button>
+    </div>
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+    const myAddress = "UQDbKJQKOdv9yJ54CSnuXGdCn5P1fbBSs9njuCRJtX5Jswqm";
+
+    function addTask() {
+        const input = document.getElementById('taskInput');
+        const list = document.getElementById('taskList');
+        if (input.value.trim() !== "") {
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${input.value}</span><button class="del-btn" onclick="this.parentElement.remove()">✕</button>`;
+            list.appendChild(li);
+            input.value = "";
+            list.scrollTo({ top: list.scrollHeight, behavior: 'smooth' });
+        }
+    }
+
+    function copyTon() {
+        navigator.clipboard.writeText(myAddress).then(() => {
+            alert("TON Address copied! 💎");
+        });
+    }
+
+    document.getElementById('taskInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addTask();
+    });
+</script>
+
+</body>
+</html>
